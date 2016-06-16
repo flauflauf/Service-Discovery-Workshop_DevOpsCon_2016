@@ -18,12 +18,13 @@ public class MicroFilmprogrammServiceTest {
 		
 		// Act
 		HttpResponse<String> response = Unirest.get("http://localhost:12345/vorführungen").asString();
-		String responseString = response.getBody();
 		
 		// Assert
+		assertNotNull(response.getBody());
+		assertNotEquals("", response.getBody());
 		assertEquals(200, response.getStatus());
-		assertTrue(responseString.startsWith("["));
-		assertTrue(responseString.endsWith("]"));
+		assertTrue(response.getBody().startsWith("["));
+		assertTrue(response.getBody().endsWith("]"));
 	}
 
 }

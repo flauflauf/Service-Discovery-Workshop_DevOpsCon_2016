@@ -4,9 +4,13 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
+import com.ecwid.consul.v1.ConsulClient;
+import com.ecwid.consul.v1.agent.model.NewService;
+
 public class MicroFilmprogrammService {
 
 	public static void main(String[] args) {
+		
 
 		if (args.length < 1) {
 			System.out.println("missing command-line argument: port");
@@ -34,6 +38,14 @@ public class MicroFilmprogrammService {
 	public void start(int port) {
 		service.start(port);
 		// Umlaute werden beim DNS nicht unterstützt
+		
+		NewService newService = new NewService();
+		newService.setName("Filmprogramm");
+		newService.setId("filmprogramm");
+		newService.setPort(port);
+		
+		ConsulClient consul = new ConsulClient();
+		consul.agentServiceRegister(newService);
 	}
 
 	public void stop() {

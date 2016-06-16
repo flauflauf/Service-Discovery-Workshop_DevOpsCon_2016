@@ -47,25 +47,29 @@ public class MicroFilmprogrammService {
 		newService.setId(serviceId);
 		newService.setPort(port);
 		
-		NewService.Check newCheck = new NewService.Check();
-		newCheck.setTtl("10s");
-		newService.setCheck(newCheck);
+//		NewService.Check newCheck = new NewService.Check();
+//		newCheck.setTtl("10s");
+//		newService.setCheck(newCheck);
 		
-		NewCheck httpCheck = new NewCheck();
+//		NewCheck httpCheck = new NewCheck();
+//		httpCheck.setHttp("http://localhost:" + port + "/vorführungen");
+//		httpCheck.setName("FilmprogrammHttp");
+//		httpCheck.setId("filmprogrammHttp-" + port);
+//		httpCheck.setTimeout("2s");
+//		httpCheck.setInterval("10s");
+		
+		NewService.Check httpCheck = new NewService.Check();
 		httpCheck.setHttp("http://localhost:" + port + "/vorführungen");
-		httpCheck.setName("FilmprogrammHttp");
-		httpCheck.setId("filmprogrammHttp-" + port);
 		httpCheck.setTimeout("2s");
 		httpCheck.setInterval("10s");
 		
+		newService.setCheck(httpCheck);
 		
 		ConsulClient consul = new ConsulClient();		
-		consul.agentCheckRegister(httpCheck);
-		consul.agentCheckDeregister("FilmprogrammHttp");
-		consul.agentCheckDeregister("FilmprogrammTTL");
+//		consul.agentCheckRegister(httpCheck);
 		consul.agentServiceRegister(newService);
 		
-		startePeriodischenHeartbeat("service:filmprogramm-"+port);
+//		startePeriodischenHeartbeat("service:filmprogramm-"+port);
 	}
 
 	private void startePeriodischenHeartbeat(String checkId) {

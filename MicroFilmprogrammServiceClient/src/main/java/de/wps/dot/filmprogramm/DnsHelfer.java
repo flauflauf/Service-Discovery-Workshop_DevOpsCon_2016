@@ -19,8 +19,8 @@ public class DnsHelfer {
 	}
 	
 	public static Map<String, String> findePortUndHostNameAusSrvEintrag(String srvEintrag) throws NamingException {
-		String port = srvEintrag.split(" ")[3];
-		String hostName = srvEintrag.split(" ")[4];
+		String port = srvEintrag.split(" ")[2];
+		String hostName = srvEintrag.split(" ")[3];
 		
 		Map<String, String> ergebnis = new HashMap<String, String>();
 		ergebnis.put("port", port);

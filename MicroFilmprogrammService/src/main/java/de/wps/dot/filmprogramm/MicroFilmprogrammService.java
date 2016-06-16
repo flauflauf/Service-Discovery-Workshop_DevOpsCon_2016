@@ -3,8 +3,10 @@ package de.wps.dot.filmprogramm;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimerTask;
 
 import com.ecwid.consul.v1.ConsulClient;
+import com.ecwid.consul.v1.agent.model.NewCheck;
 import com.ecwid.consul.v1.agent.model.NewService;
 
 public class MicroFilmprogrammService {
@@ -41,11 +43,49 @@ public class MicroFilmprogrammService {
 		
 		NewService newService = new NewService();
 		newService.setName("Filmprogramm");
-		newService.setId("filmprogramm");
+		String serviceId = "filmprogramm-" + port;
+		newService.setId(serviceId);
 		newService.setPort(port);
 		
-		ConsulClient consul = new ConsulClient();
+		NewService.Check newCheck = new NewService.Check();
+		newCheck.setTtl("10s");
+		newService.setCheck(newCheck);
+		
+		NewCheck httpCheck = new NewCheck();
+		httpCheck.setHttp("http://localhost:" + port + "/vorführungen");
+		httpCheck.setName("FilmprogrammHttp");
+		httpCheck.setId("filmprogrammHttp-" + port);
+		httpCheck.setTimeout("2s");
+		httpCheck.setInterval("10s");
+		
+		
+		ConsulClient consul = new ConsulClient();		
+		consul.agentCheckRegister(httpCheck);
+		consul.agentCheckDeregister("FilmprogrammHttp");
+		consul.agentCheckDeregister("FilmprogrammTTL");
 		consul.agentServiceRegister(newService);
+		
+		startePeriodischenHeartbeat("service:filmprogramm-"+port);
+	}
+
+	private void startePeriodischenHeartbeat(String checkId) {
+		new TimerTask() {
+			
+			@Override
+			public void run() {
+				while(true){
+					try {
+						ConsulClient client = new ConsulClient();
+						client.agentCheckPass(checkId);
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
+			}
+		}.run();;
+		
 	}
 
 	public void stop() {
